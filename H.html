@@ -1,0 +1,50 @@
+from flask import Flask, render_template_string, request
+import requests
+import random
+from datetime import datetime
+
+app = Flask(__name__)
+
+TOKEN = '7824269927:AAGnd7FWPH9LVwyuRwzOXEcVocxQ4J-OoBw'
+CHAT_ID = '@fathkerajer'
+
+posts = [
+    " قال رسول الله  خيركم من تعلم القرآن وعلمه",
+    "الصلاة عماد الدين، حافظ عليها",
+    " التفكر ساعة خير من عبادة سنة",
+    " سبحان الله وبحمده، سبحان الله العظيم",
+    " تبسمك في وجه أخيك صدقة",
+    " اجعل هدفك الجنة ولا تنشغل عنها",
+    " صل من قطعك واعفُ عمن ظلمك",
+    " فضل الصيام لا يُدرك إلا بثواب عظيم",
+    " الذكر حصن المسلم",
+    " اقرأ وردك من القرآن اليوم"
+]
+
+html = '''
+<!DOCTYPE html>
+<html>
+<head><title>نشر تلقائي</title></head>
+<body>
+    <h2>اضغط الزر لنشر منشور عشوائي</h2>
+    <form method="POST">
+        <button type="submit">نشر</button>
+    </form>
+    {% if message %}
+        <p>✅ {{ message }}</p>
+    {% endif %}
+</body>
+</html>
+'''
+
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    message = ''
+    if request.method == 'POST':
+        msg = random.choice(posts)
+        requests.get(f'https://api.telegram.org/bot{TOKEN}/sendMessage?chat_id={CHAT_ID}&text={msg}')
+        message = f"تم النشر: {msg}"
+    return render_template_string(html, message=message)
+
+if __name__ == '__main__':
+    app.run()
